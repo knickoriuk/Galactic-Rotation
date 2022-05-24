@@ -1,0 +1,17 @@
+font.family : serif
+axes.labelsize : 15
+axes.titlesize : 20
+axes.facecolor : white
+axes.edgecolor : black
+axes.labelcolor : black
+grid.linewidth : 0.25
+grid.color : black
+grid.alpha : 0.5
+grid.linestyle : --
+ytick.labelsize : 10
+ytick.color : black
+xtick.labelsize : 10
+xtick.color : black
+figure.facecolor : white
+figure.edgecolor : white
+text.color : black
