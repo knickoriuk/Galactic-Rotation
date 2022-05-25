@@ -3,12 +3,15 @@ import numpy as np
 from scipy.signal import savgol_filter
 
 def set_plot_style():
+    ''' Sets matplotlib's global style settings. '''
     plt.style.use('./light.mplstyle')
     plt.rc('figure', figsize=(12,5), dpi=150)
     plt.rc('axes', titlesize=18)
     plt.rc('savefig', dpi=300, bbox='tight')
     
 def plot_keplerian_curve():
+    ''' Plots the planets of the solar system's distance from the sun vs 
+    orbital velocity along with the 1/sqrt(r) relationship. '''
     R = np.linspace(0.2, 31, 40)
     V = (1.326663e20/(R*1.496e11))**(1/2) /1000
     planets_in = ['Mercury', 'Venus', 'Earth', 'Mars']
@@ -22,12 +25,15 @@ def plot_keplerian_curve():
     ax.plot(R, V, lw=1, color='k', ls='--', alpha=0.75)
     ax.scatter(p_in_radius, p_in_velocity, c='red')
     ax.scatter(p_out_radius, p_out_velocity, c='red')
+    
+    # Inner Planets
     for planet, radius, velocity in zip(planets_in, p_in_radius, p_in_velocity):
         ax.text(radius+0.25, velocity, planet, 
                 fontsize=12, 
                 family='serif', 
                 ha='left', 
                 va='center')
+    # Outer Planets
     for planet, radius, velocity in zip(planets_out, p_out_radius, p_out_velocity):
         ax.text(radius, velocity+1, planet, 
                 fontsize=12, 
@@ -48,6 +54,8 @@ def plot_keplerian_curve():
     return fig, ax
 
 def raw_data_plot(raw_data, l, b):
+    ''' Plots the untrimmed and unmodified radio data at longitude l and
+    latitude b. '''
     fig, ax = plt.subplots(1,1)
     ax.plot(raw_data['freqs'], 
             raw_data['data'].mean(axis=0).flatten(),
@@ -59,11 +67,17 @@ def raw_data_plot(raw_data, l, b):
     return fig, ax
 
 def line_plot(df, l, b):
+    '''  Plots the data in a dataframe corresponding to a single longitude, 
+    comparing the signal for latitude 0 and the non-zero latitude signal. 
+    Specify longitude l and latitude b for labelling. '''
     fig, ax = plt.subplots(1,1)
+    # Plot data with latitude 0, eg. along the galactic plane
     ax.plot(df.freq,10*np.log10(df.data),
             lw=1, c='red', label='0')
+    # Plot data with non-zero latitude
     ax.plot(df.freq,10*np.log10(df.baseline),
         lw=0.5, c='black', ls='--', label=str(b))
+    
     ax.legend(title='Galatic Latitude (b)')
     ax.set_xlabel('Frequency (MHz)')
     ax.set_ylabel('Power (dB, arbitrary)')
@@ -74,6 +88,9 @@ def line_plot(df, l, b):
     return fig, ax
 
 def plot_baseline_fit(df, l, deg=13):
+    ''' Plots the ratio of on-plane signal to off-plane signal, highlighting 
+    the points within 0.5 to the 21cm line. Specify longitude l for labelling,
+    and a polynomial degree for best fit line.'''
     f21cm = 1420.405 #MHz
     df_trimmed = df.drop(df[np.abs(df.freq-f21cm) < 0.5].index)
     norm_trimmed = df_trimmed.data/df_trimmed.baseline
@@ -94,6 +111,9 @@ def plot_baseline_fit(df, l, deg=13):
     return fig, ax
 
 def detrend(df):
+    ''' Given a dataset, calculates a polynomial fit for data not within 0.5 of
+    the 21cm line and subtracts the fit from the data, such that the points lie 
+    on and around 0. '''
     f21cm = 1420.405 #MHz
     df_trimmed = df.drop(df[np.abs(df.freq-f21cm) < 0.5].index)
     norm_trimmed = df_trimmed.data/df_trimmed.baseline
@@ -104,7 +124,8 @@ def detrend(df):
     return norm-fit
 
 def plot_detrended_freq(df, corrected_signal, l):
-    
+    ''' Plots the ratio of on-plane signal to off-plane signal with the 
+    polynomial trendline subtracted from the points. '''
     fig, ax = plt.subplots(1,1)
     ax.grid(which = 'major', alpha=0.5, lw=0.75, c='k')
     ax.grid(which = 'minor', alpha=0.25, lw=0.25, ls='--', c='k')
@@ -119,12 +140,15 @@ def plot_detrended_freq(df, corrected_signal, l):
     return fig, ax
 
 def freq_to_rv(frequency_array):
+    ''' Converts a frequency to radial velocity, given the frequency was 
+    shifted from the 21-cm line. '''
     f21cm = 1420.405 #MHz
     rv = 2.99792e8 * (f21cm - frequency_array)/frequency_array
     return rv
 
 def plot_normalized_signal(df, corrected_signal, l, zoomed=False):    
-    
+    ''' Plots the ratio of on-plane signal to off-plane signal, converted to a
+    radial velocity measurement. '''
     fig, ax = plt.subplots(1,1)
     ax.set_ylabel('Fractional Power Difference (%)')
     ax.set_title(f'Radial Velocity of Galactic Arms Based on Shifting of 21-cm Line ($\ell={l}$)')
@@ -151,6 +175,8 @@ def plot_normalized_signal(df, corrected_signal, l, zoomed=False):
     return fig, ax, ax2
 
 def plot_rv_heatmap(all_datasets):
+    ''' Generates a heatmap of radial velocity measurements for each longitude
+    that data is available for. '''
     power = []
     for df in all_datasets.values():
         power.append(detrend(df))
@@ -173,6 +199,8 @@ def plot_rv_heatmap(all_datasets):
     return fig, ax
 
 def get_tangential_velocity(v_radial, l):
+    ''' Calculates the ring radius and tangential velocity given radial 
+    velocity and the galactic longitude of the data measurement.'''
     R_sun = 8 #kpc
     v_sun = 220 #km/s
     l_rad = l * np.pi / 180
@@ -181,6 +209,10 @@ def get_tangential_velocity(v_radial, l):
     return (R, v)
 
 def plot_rotation_curve(vr_peaks_array, longitudes, comparison=False):
+    ''' Plots a rotation curve for the Milky Way given a list of radial 
+    velocities corresponding to the strongest signal/highest peak, and a list 
+    of longitudes. Overlays the plot with the three rotation models when 
+    comparison==True. '''
     R = []
     v = []
     for i in range(16):
