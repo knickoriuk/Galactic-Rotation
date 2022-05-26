@@ -1,8 +1,8 @@
 # Galactic Rotation Analysis
 
-A rotation curve shows the orbital rotation speed of an object at various radii from its center of orbit. The planets in our solar system obey a rotation curve defined by the proportionality $v\propto R^{-1/2}$, and it was originally expected that this would also apply to our galaxy's rate of rotation. 
+A rotation curve shows the orbital rotation speed of an object at various radii from its center of orbit. The planets in our solar system obey a rotation curve such that speed is proportional to 1/sqrt(orbital radius), and it was originally expected that this would also apply to our galaxy's rate of rotation. 
 
-Using a heterodyne radio reciever called the AirSpy, measurements have been collected of radio signals around 1420 MHz originating from Hydrogen in the disk of the galaxy. With this data, it is possible to calculate the speed of rotation of the Milky Way. Through analysis, this will reveal that the rotation of the galaxy increases linearly ($v \propto R$) up to a radius of about 5 kpc, then remains **constant** at a velocity around 185 km/s. It does not follow the same proportionality that the solar system does. To account for this difference in behaviour, the galaxy must be far more massive than we can measure, which is strong evidence of the existence of dark matter within the galactic halo. 
+Using a heterodyne radio reciever called the AirSpy, measurements have been collected of radio signals around 1420 MHz originating from Hydrogen in the disk of the galaxy. With this data, it is possible to calculate the speed of rotation of the Milky Way. Through analysis, this will reveal that the rotation of the galaxy increases linearly (speed proportional to orbital radius) up to a radius of about 5 kpc, then remains **constant** at a velocity around 185 km/s. It does not follow the same proportionality that the solar system does. To account for this difference in behaviour, the galaxy must be far more massive than we can measure, which is strong evidence of the existence of dark matter within the galactic halo. 
 
 ##
 
